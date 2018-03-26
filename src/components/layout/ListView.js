@@ -1,7 +1,15 @@
+/**
+ * Created by jiahang Lee on 2018/3/23.
+ */
 import React from 'react';
 import { connect } from 'dva';
+import { List, Stepper } from 'antd-mobile';
+import 'antd-mobile/dist/antd-mobile.min.css';
+import  api  from '../../config';
 import { ListView } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
+import stepper from "./stepper";
+
 
 
 const data = [
@@ -10,7 +18,6 @@ const data = [
     title: 'Meet hotel',
     des: '不是所有的兼职汪都需要风吹日晒',
   },
-
   {
     img: 'https://zos.alipayobjects.com/rmsportal/XmwCzSeJiqpkuMB.png',
     title: 'McDonald\'s invites you',
@@ -22,72 +29,77 @@ const data = [
     des: '不是所有的兼职汪都需要风吹日晒',
   },
 ];
-const NUM_SECTIONS = 5;
-const NUM_ROWS_PER_SECTION = 5;
-let pageIndex = 0;
+const NUM_ROWS = 3;
+let pageIndex = 1;
 
-const dataBlobs = {};
-let sectionIDs = [];
-let rowIDs = [];
-function genData(pIndex = 0) {
-  for (let i = 0; i < NUM_SECTIONS; i++) {
-    const ii = (pIndex * NUM_SECTIONS) + i;
-    const sectionName = `Section ${ii}`;
-    sectionIDs.push(sectionName);
-    dataBlobs[sectionName] = sectionName;
-    rowIDs[ii] = [];
-
-    for (let jj = 0; jj < NUM_ROWS_PER_SECTION; jj++) {
-      const rowName = `S${ii}, R${jj}`;
-      rowIDs[ii].push(rowName);
-      dataBlobs[rowName] = rowName;
-    }
+function genData(pIndex = 1) {
+  const dataBlob = {};
+  for (let i = 0; i < NUM_ROWS; i++) {
+    const ii = (pIndex * NUM_ROWS) + i;
+    dataBlob[`${ii}`] = `row - ${ii}`;
   }
-  sectionIDs = [...sectionIDs];
-  rowIDs = [...rowIDs];
+  return dataBlob;
 }
 
-class IndexPage extends React.Component {
+class ListView1 extends React.Component {
+
   constructor(props) {
     super(props);
-    const getSectionData = (dataBlob, sectionID) => dataBlob[sectionID];
-    const getRowData = (dataBlob, sectionID, rowID) => dataBlob[rowID];
-
     const dataSource = new ListView.DataSource({
-      getRowData,
-      getSectionHeaderData: getSectionData,
       rowHasChanged: (row1, row2) => row1 !== row2,
-      sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
     });
 
     this.state = {
-      dataSource,
-      isLoading: true,
+      dataSource:new ListView.DataSource({
+          rowHasChanged: (row1, row2) => row1 !== row2,}),
+      isLoading: false,
+      data2:[],
+      val: 3,
+      val1: 2,
     };
+    // this.state = {
+    //   searchString:'',
+    // isLoading:false,
+    // message:'',
+    // dataSource:new ListView.DataSource({rowHasChanged:(r1,r2)=> r1!== r2})};
+
   }
 
+  onChange = (val) => {
+    // console.log(val);
+    this.setState({ val });
+  }
+  onChange1 = (val1) => {
+    // console.log(val);
+    this.setState({ val1 });
+  }
   componentDidMount() {
     // you can scroll to the specified position
     // setTimeout(() => this.lv.scrollTo(0, 120), 800);
 
     // simulate initial Ajax
-    setTimeout(() => {
-      genData();
+
+
+      this.rData = genData();
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRowsAndSections(dataBlobs, sectionIDs, rowIDs),
+        dataSource: this.state.dataSource.cloneWithRows(this.rData),
         isLoading: false,
       });
-    }, 600);
+
   }
 
   // If you use redux, the data maybe at props, you need use `componentWillReceiveProps`
-  // componentWillReceiveProps(nextProps) {
-  //   if (nextProps.dataSource !== this.props.dataSource) {
-  //     this.setState({
-  //       dataSource: this.state.dataSource.cloneWithRowsAndSections(nextProps.dataSource),
-  //     });
-  //   }
-  // }
+  componentWillReceiveProps(nextProps) {
+    let abc = nextProps.data
+    if (nextProps.data !== this.state.dataSource) {
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(nextProps.data),
+        data2:abc
+      });
+    }
+  }
+
+  // shouldComponentUpdate(){}
 
   onEndReached = (event) => {
     // load new data
@@ -98,9 +110,9 @@ class IndexPage extends React.Component {
     console.log('reach end', event);
     this.setState({ isLoading: true });
     setTimeout(() => {
-      genData(++pageIndex);
+      this.rData = { ...this.rData, ...genData(++pageIndex) };
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRowsAndSections(dataBlobs, sectionIDs, rowIDs),
+        dataSource: this.state.dataSource.cloneWithRows(this.rData),
         isLoading: false,
       });
     }, 1000);
@@ -118,12 +130,20 @@ class IndexPage extends React.Component {
         }}
       />
     );
-    let index = data.length - 1;
+    let data3 = this.state.data2
+    console.log(data)
+    console.log(typeof (data))
+    console.log(data3)
+    console.log(typeof(data3))
+    let index = data3.length - 1;
+    console.log(index)
+
     const row = (rowData, sectionID, rowID) => {
       if (index < 0) {
-        index = data.length - 1;
+        index = data3.length - 1;
       }
-      const obj = data[index--];
+      console.log(index)
+      const obj = data3[index--];
       return (
         <div key={rowID} style={{ padding: '0 15px' }}>
           <div
@@ -133,58 +153,49 @@ class IndexPage extends React.Component {
               fontSize: 18,
               borderBottom: '1px solid #F6F6F6',
             }}
-          >{obj.title}</div>
+          >{obj!==undefined?obj.name:"tom"}</div>
           <div style={{ display: '-webkit-box', display: 'flex', padding: '15px 0' }}>
-            <img style={{ height: '64px', marginRight: '15px' }} src={obj.img} alt="" />
+            <img style={{ height: '64px', marginRight: '15px' }} src={obj!==undefined?(api.REST_API+obj.imageUrl):"tom"} alt="" />
             <div style={{ lineHeight: 1 }}>
-              <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>{obj.des}</div>
-              <div><span style={{ fontSize: '30px', color: '#FF6E27' }}>35</span>¥ {rowID}</div>
+              <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>{obj!==undefined?obj.description:"tom"}</div>
+              <div><span style={{ fontSize: '30px', color: '#FF6E27' }}>{obj!==undefined?obj.price:"tom"}</span>¥</div>
             </div>
+
           </div>
+          <List>
+            <List.Item
+              wrap
+              extra={
+                <Stepper
+                  style={{ width: '100%', minWidth: '100px' }}
+                  showNumber
+                  max={10}
+                  min={1}
+                  value={this.state.val}
+                  onChange={this.onChange}
+                />}
+            >
+              {obj!==undefined?obj.practice:"ok"}
+            </List.Item>
+          </List>
         </div>
+
       );
     };
-
     return (
       <ListView
         ref={el => this.lv = el}
         dataSource={this.state.dataSource}
-        className="am-list sticky-list"
-        useBodyScroll
-        renderSectionWrapper={sectionID => (
-          <StickyContainer
-            key={`s_${sectionID}_c`}
-            className="sticky-container"
-            style={{ zIndex: 4 }}
-          />
-        )}
-        renderSectionHeader={sectionData => (
-          <Sticky>
-            {({
-                style,
-              }) => (
-              <div
-                className="sticky"
-                style={{
-                  ...style,
-                  zIndex: 3,
-                  backgroundColor: parseInt(sectionData.replace('Section ', ''), 10) % 2 ?
-                    '#5890ff' : '#F8591A',
-                  color: 'white',
-                }}
-              >{`Task ${sectionData.split(' ')[1]}`}</div>
-            )}
-          </Sticky>
-        )}
-        renderHeader={() => <span>header</span>}
         renderFooter={() => (<div style={{ padding: 30, textAlign: 'center' }}>
           {this.state.isLoading ? 'Loading...' : 'Loaded'}
         </div>)}
         renderRow={row}
         renderSeparator={separator}
+        className="am-list"
         pageSize={4}
+        useBodyScroll
         onScroll={() => { console.log('scroll'); }}
-        scrollEventThrottle={200}
+        scrollRenderAheadDistance={500}
         onEndReached={this.onEndReached}
         onEndReachedThreshold={10}
       />
@@ -194,4 +205,4 @@ class IndexPage extends React.Component {
 
 
 
-export default connect()(IndexPage);
+export default ListView1;

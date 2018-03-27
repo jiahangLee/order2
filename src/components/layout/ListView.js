@@ -30,14 +30,15 @@ const data = [
   },
 ];
 const NUM_ROWS = 3;
-let pageIndex = 1;
+let pageIndex = 0;
 
-function genData(pIndex = 1) {
+function genData(pIndex = 0) {
   const dataBlob = {};
   for (let i = 0; i < NUM_ROWS; i++) {
     const ii = (pIndex * NUM_ROWS) + i;
     dataBlob[`${ii}`] = `row - ${ii}`;
   }
+  console.log(dataBlob)
   return dataBlob;
 }
 
@@ -66,26 +67,23 @@ class ListView1 extends React.Component {
   }
 
   onChange = (val) => {
-    // console.log(val);
-    this.setState({ val });
+
+    // this.setState({ val });
   }
   onChange1 = (val1) => {
     // console.log(val);
     this.setState({ val1 });
   }
+
   componentDidMount() {
-    // you can scroll to the specified position
-    // setTimeout(() => this.lv.scrollTo(0, 120), 800);
-
-    // simulate initial Ajax
-
 
       this.rData = genData();
+    if(this.state.data2.length === 0)
+      return;
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(this.rData),
         isLoading: false,
       });
-
   }
 
   // If you use redux, the data maybe at props, you need use `componentWillReceiveProps`
@@ -109,13 +107,13 @@ class ListView1 extends React.Component {
     }
     console.log('reach end', event);
     this.setState({ isLoading: true });
-    setTimeout(() => {
+
       this.rData = { ...this.rData, ...genData(++pageIndex) };
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(this.rData),
         isLoading: false,
       });
-    }, 1000);
+
   }
 
   render() {
@@ -131,20 +129,16 @@ class ListView1 extends React.Component {
       />
     );
     let data3 = this.state.data2
-    console.log(data)
-    console.log(typeof (data))
-    console.log(data3)
-    console.log(typeof(data3))
     let index = data3.length - 1;
-    console.log(index)
 
     const row = (rowData, sectionID, rowID) => {
+      console.log("index:"+index)
       if (index < 0) {
         index = data3.length - 1;
       }
-      console.log(index)
       const obj = data3[index--];
       return (
+
         <div key={rowID} style={{ padding: '0 15px' }}>
           <div
             style={{
@@ -153,6 +147,7 @@ class ListView1 extends React.Component {
               fontSize: 18,
               borderBottom: '1px solid #F6F6F6',
             }}
+
           >{obj!==undefined?obj.name:"tom"}</div>
           <div style={{ display: '-webkit-box', display: 'flex', padding: '15px 0' }}>
             <img style={{ height: '64px', marginRight: '15px' }} src={obj!==undefined?(api.REST_API+obj.imageUrl):"tom"} alt="" />
@@ -170,8 +165,8 @@ class ListView1 extends React.Component {
                   style={{ width: '100%', minWidth: '100px' }}
                   showNumber
                   max={10}
-                  min={1}
-                  value={this.state.val}
+                  min={0}
+                  defaultValue={0}
                   onChange={this.onChange}
                 />}
             >

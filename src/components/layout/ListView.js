@@ -3,12 +3,15 @@
  */
 import React from 'react';
 import { connect } from 'dva';
+import {Link} from 'dva/router'
+import {hashHistory} from 'dva/router'
 import { List, Stepper } from 'antd-mobile';
 import 'antd-mobile/dist/antd-mobile.min.css';
 import  api  from '../../config';
+import common from '../../models/common'
 import { ListView } from 'antd-mobile';
 import { StickyContainer, Sticky } from 'react-sticky';
-import stepper from "./stepper";
+import stepper from "../../routes/stepper";
 
 
 
@@ -66,13 +69,16 @@ class ListView1 extends React.Component {
 
   }
 
-  onChange = (val) => {
-
-    // this.setState({ val });
+  onChange3 = (id) => {
+    // hashHistory.push('/item')
+    this.props.dispatch({
+      type:'common/getId',
+      payload:id
+    })
   }
   onChange1 = (val1) => {
     // console.log(val);
-    this.setState({ val1 });
+
   }
 
   componentDidMount() {
@@ -88,10 +94,10 @@ class ListView1 extends React.Component {
 
   // If you use redux, the data maybe at props, you need use `componentWillReceiveProps`
   componentWillReceiveProps(nextProps) {
-    let abc = nextProps.data
-    if (nextProps.data !== this.state.dataSource) {
+    let abc = nextProps.list.data
+    if (nextProps.list.data !== this.state.dataSource) {
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(nextProps.data),
+        dataSource: this.state.dataSource.cloneWithRows(nextProps.list.data),
         data2:abc
       });
     }
@@ -139,7 +145,7 @@ class ListView1 extends React.Component {
       const obj = data3[index--];
       return (
 
-        <div key={rowID} style={{ padding: '0 15px' }}>
+        <div key={rowID} style={{ padding: '0 15px' }} onClick={()=>{this.onChange3(obj.id)}}>
           <div
             style={{
               lineHeight: '50px',
@@ -147,7 +153,6 @@ class ListView1 extends React.Component {
               fontSize: 18,
               borderBottom: '1px solid #F6F6F6',
             }}
-
           >{obj!==undefined?obj.name:"tom"}</div>
           <div style={{ display: '-webkit-box', display: 'flex', padding: '15px 0' }}>
             <img style={{ height: '64px', marginRight: '15px' }} src={obj!==undefined?(api.REST_API+obj.imageUrl):"tom"} alt="" />
@@ -155,26 +160,8 @@ class ListView1 extends React.Component {
               <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>{obj!==undefined?obj.description:"tom"}</div>
               <div><span style={{ fontSize: '30px', color: '#FF6E27' }}>{obj!==undefined?obj.price:"tom"}</span>¥</div>
             </div>
-
           </div>
-          <List>
-            <List.Item
-              wrap
-              extra={
-                <Stepper
-                  style={{ width: '100%', minWidth: '100px' }}
-                  showNumber
-                  max={10}
-                  min={0}
-                  defaultValue={0}
-                  onChange={this.onChange}
-                />}
-            >
-              {obj!==undefined?obj.practice:"ok"}
-            </List.Item>
-          </List>
         </div>
-
       );
     };
     return (

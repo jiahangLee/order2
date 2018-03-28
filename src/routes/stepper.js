@@ -2,9 +2,8 @@
  * Created by jiahang Lee on 2018/3/26.
  */
 import { List, Stepper } from 'antd-mobile';
-import React from 'react'
-import 'antd-mobile/dist/antd-mobile.min.css';
-class stepper1 extends React.Component {
+
+class Demo extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,8 +36,20 @@ class stepper1 extends React.Component {
         >
           Show number value
         </List.Item>
+        <List.Item extra={
+          <Stepper
+            style={{ width: '100%', minWidth: '100px' }}
+            showNumber
+            max={10}
+            min={1}
+            defaultValue={3}
+            disabled
+          />}
+        >
+          Disabled
+        </List.Item>
       </List>
     );
   }
 }
- export default stepper1;
+export default Demo;

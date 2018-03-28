@@ -1,7 +1,6 @@
 /**
  * Created by jiahang Lee on 2018/3/23.
  */
-
 import { Popover, NavBar, Icon } from 'antd-mobile';
 
 const Item = Popover.Item;

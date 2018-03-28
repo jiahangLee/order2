@@ -1,16 +1,17 @@
 /**
- * Created by jiahang Lee on 2018/3/23.
+ * Created by jiahang Lee on 2018/3/28.
  */
 import { connect } from 'dva';
-import ListView1 from '../components/layout/ListView';
+import React from 'react'
+import Order from '../components/layout/Order';
 import MainLayout from '../components/layout/MainLayout';
 
-class Home extends React.Component {
+class Item extends React.Component {
   render() {
     return (
       <MainLayout>
-        <div className='normal'>
-          <ListView1 {...this.props}/>
+        <div >
+          <Order {...this.props}/>
         </div>
       </MainLayout>
     );
@@ -23,5 +24,4 @@ function mapStateToProps(state) {
     list
   };
 }
-export default connect(mapStateToProps)(Home);
-
+export default connect(mapStateToProps)(Item);
